@@ -4,8 +4,10 @@ import java.util.Scanner;
 public class App {
     public static void main(String[] args) throws Exception {
         Scanner input = new Scanner(System.in);
+        
         ArrayList<Pet> listOfPets = new ArrayList<>();
         char loopContinue = 'y';
+
         String petName = "";
         int petAge = 0;
         double petPrice = 0.00;
