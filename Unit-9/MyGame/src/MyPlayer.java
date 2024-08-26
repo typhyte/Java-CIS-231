@@ -46,6 +46,6 @@ public class MyPlayer {
 
     @Override
     public String toString() {
-        return "MyPlayer \n [id=" + id + ",\n name=" + name + ",\n power=" + power + "]";
+        return "MyPlayer \n id=" + this.id + "\n name=" + this.name + "\n power=" + this.power;
     }
 }
