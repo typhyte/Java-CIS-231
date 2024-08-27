@@ -44,8 +44,16 @@ public class MyPlayer {
         }
     }
 
+    public MyPlayer deepCopy() {
+        return new MyPlayer(this.id, this.name, this.power);
+    }
+
+    public boolean equals (MyPlayer playerX) {
+        return this.power == playerX.power;
+    }
+
     @Override
     public String toString() {
-        return "MyPlayer \n id=" + this.id + "\n name=" + this.name + "\n power=" + this.power;
+        return "MyPlayer\tid=" + this.id + "\tname=" + this.name + "\tpower=" + this.power;
     }
 }
