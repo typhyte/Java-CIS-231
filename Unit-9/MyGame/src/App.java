@@ -2,7 +2,7 @@ import java.util.ArrayList;
 
 public class App {
     public static void main (String[] args) {
-        ArrayList<MyPlayer> list = new ArrayList();
+        ArrayList<MyPlayer> list = new ArrayList<>();
 
         MyPlayer p1 = new MyPlayer(0, "theta", 2);
         MyPlayer p2 = new MyPlayer(1, "ada", 14);
@@ -17,5 +17,9 @@ public class App {
             //MyPlayer p = list.get(i)
             System.out.println(list.get(i).toString());
         }
+    }
+
+    public MyPlayer deepCopy(MyPlayer playerToBeCopied) {
+        return new MyPlayer(playerToBeCopied.getId(), playerToBeCopied.getName(), playerToBeCopied.getPower());
     }
 }
