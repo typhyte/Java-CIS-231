@@ -1,8 +1,12 @@
 public class MyArray {
     public static int[] populate(int size) {
         // populates an array with a user specified size
-        int[] sample = {1, 2, 3};
-        return sample;
+        int[] theArray = new int[size];
+        for (int i = 0; i < size; i++) {
+            theArray[i] = (int) (Math.random() * 100);
+        }
+
+        return theArray;
     };
 
     public static int minArray(int[] num) {
@@ -29,6 +33,9 @@ public class MyArray {
 
     public static void showArray(int[] num) {
         // prints out a user given array to standard output
-        System.out.println("I have been called!");
+        for (int i = 0; i < num.length; i++) {
+            System.out.print(num[i] + " ");
+        }
+        System.out.println();
     }
 }
