@@ -4,6 +4,22 @@ public class Pet {
     double adoptionPrice;
     double dailyExpenses;
     
+    public String toString() {
+        return "Age: " + age + "\tSpecies: " + species + "\tAdoption Price: " + adoptionPrice + "\tDaily Expenses: " + dailyExpenses;
+    }
+
+    // multiple pets of unknown species
+    public void speak(int x) {
+        for (int i = 0; i < x; i++) {
+            System.out.println("I am just a general pet.");
+        }
+    }
+
+    // singular pet of unknown species
+    public void speak() {
+        System.out.println("I am just a general pet.");
+    }
+
     public int getAge() {
         return age;
     }
