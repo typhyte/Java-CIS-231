@@ -17,8 +17,6 @@ public class PetProcessor {
             String info = petData.get(i);
             String[] fields = info.split(",");
             int choice = Integer.parseInt(fields[0].trim()); // uses the first value to determine pet type
-            
-            Pet pet;
 
             if (choice == 1) {
                 // if the pet id is 1, make a new cat

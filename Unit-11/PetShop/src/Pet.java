@@ -1,4 +1,4 @@
-public class Pet {
+public abstract class Pet {
     int age;
     String species;
     double adoptionPrice;
@@ -16,9 +16,7 @@ public class Pet {
     }
 
     // singular pet of unknown species
-    public void speak() {
-        System.out.println("I am just a general pet.");
-    }
+    public abstract void speak();
 
     public int getAge() {
         return age;
