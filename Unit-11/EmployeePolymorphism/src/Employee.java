@@ -2,14 +2,11 @@ public class Employee {
     String name;
     String role;
     int yearsOfService;
-    double taxPercent;
-
-    Employee() {
-    }
+    double taxPercent; // gotten in whole numbers
 
     @Override
     public String toString() {
-        return "Name: " + name + " Role: " + getRole() + " Net Pay: " + getNetPay() + " Gross Pay: " + getGrossPay();
+        return "Name: " + name + " | Role: " + getRole() + " | Net Pay: " + getNetPay() + " | Gross Pay: " + getGrossPay();
     }
 
     public String getName() {
@@ -33,7 +30,11 @@ public class Employee {
     }
 
     public void setYearsOfService(int yearsOfService) {
-        this.yearsOfService = yearsOfService;
+        if (yearsOfService >= 0) {
+            this.yearsOfService = yearsOfService;
+        } else {
+            this.yearsOfService = 0;
+        }
     }
 
     public double getTaxPercent() {
@@ -41,7 +42,11 @@ public class Employee {
     }
 
     public void setTaxPercent(double taxPercent) {
-        this.taxPercent = taxPercent;
+        if (taxPercent > 0) {
+            this.taxPercent = taxPercent;
+        } else {
+            this.taxPercent = 7;
+        }
     }
 
     public double getNetPay() {
