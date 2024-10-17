@@ -1,27 +1,28 @@
 public interface MyList {
-    //returns the amount of items in the list
+    // returns the amount of items in the list
     public int size();
 
-    //gets data from given index from list
+    // gets data from given index from list
     public Object get (int index);
 
-    //adders
+    // adders
     public void add(Object obj);
     // public void add(int index, Object obj);
 
-    // //removers
-    // public void remove(int index);
+    // removers
+    public void remove(int index);
     // public void remove(Object obj);
+    public void removeAll();
 
-    // //sets
-    // void set(int index, Object obj);
+    // sets
+    public void set(int index, Object obj);
     
-    // //contains a certain substring (?)
-    // boolean contains(Object obj);
+    //contains a certain substring (?)
+    public boolean contains(Object obj);
     
     //returns index of substring
-    int indexOf(Object obj);
+    public int indexOf(Object obj);
 
     //returns true if list has nothing
-    boolean isEmpty();
+    public boolean isEmpty();
 }

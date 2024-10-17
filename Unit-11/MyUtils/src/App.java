@@ -38,6 +38,12 @@ public class App {
         } else {
             System.out.println("The list does not contain \"AAAAA\"");
         }
+
+        list.remove(1);
+        
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i));
+        }
     }
 
     public static void myFileTest() {
