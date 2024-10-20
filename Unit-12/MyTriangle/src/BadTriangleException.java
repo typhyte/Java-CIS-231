@@ -6,4 +6,8 @@ public class BadTriangleException extends Exception {
         s2 = a2;
         s3 = a3;
     }
+
+    public String toString() {
+        return "This triangle is invalid";
+    }
 }
