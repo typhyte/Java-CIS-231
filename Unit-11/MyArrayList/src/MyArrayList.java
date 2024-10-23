@@ -47,22 +47,35 @@ public class MyArrayList<T> implements MyList {
     }
 
     public void add (int index, Object obj) {
-        Object longerObject[] = new Object[size * 2];
-        Object objAtIndex = object[index];
+        Object replicatedObject = new Object();
 
-        // copies original array and makes a new, longer array
-        for (int i = 0; i < object.length-1; i++) {
-            if (i == index) {
-                object[index+1] = objAtIndex;
+        if (size == object.length) { // checks if array is of adequate size
+            Object longerObject[] = new Object[size * 2];
+
+            System.out.println(size-1);
+
+            // copies original array and makes a new, longer array
+            for (int i = 0; i < size; i++) {
+                replicatedObject = object[i + 1]; // copies the object in front of the removed item
+                object[i] = replicatedObject; // copies it to the removed index
             }
-            longerObject[i] = object[i];
+
+            //object list is now longer
+            object = longerObject;
+            replicatedObject = null;
         }
 
-        //object list is now longer
-        object = longerObject;
+        if (index < 0 || index > size) {
+            throw new IndexOutOfBoundsException(); // make sure index isn't out of bounds
+        } else {
+            for (int i = size; i >= index; i--) {
+                replicatedObject = object[i-1];
+                object[i] = replicatedObject;
+            }
 
-        object[index] = obj;
-        size++;
+            object[index] = obj;
+            size++;
+        }
     }
 
     // remove item @ specific index
@@ -72,7 +85,7 @@ public class MyArrayList<T> implements MyList {
         if (index < 0 || index > size) {
             throw new IndexOutOfBoundsException();
         } else {
-            object[index] = null; // null TUAH! delete that thang!
+            object[index] = null;
             for (int i = index; i < size; i++) {
                 replicatedObject = object[i + 1]; // copies the object in front of the removed item
                 object[i] = replicatedObject; // copies it to the removed index

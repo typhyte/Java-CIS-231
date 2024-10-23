@@ -29,9 +29,7 @@ public class App {
         list.add("BBBBB");
         list.add("CCCCC");
 
-        // for (int i = 0; i < list.size(); i++) {
-        //     System.out.println(list.get(i));
-        // }
+        
 
         if (list.indexOf("AAAAA") >= 0) {
             System.out.println("The list contains \"AAAAA\"");
@@ -41,6 +39,22 @@ public class App {
 
         list.remove(1);
         
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i));
+        }
+
+        System.out.println();
+
+        list.add(1, "DDDDD");
+
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i));
+        }
+
+        System.out.println();
+
+        list.remove("DDDDD");
+
         for (int i = 0; i < list.size(); i++) {
             System.out.println(list.get(i));
         }
