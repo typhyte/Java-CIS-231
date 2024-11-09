@@ -1,4 +1,6 @@
 Tom,2,34.55,cat_pics/cat1.jpg
-Tiny,3,24,cat_pics/cat2.jpg
-Rolly,1,90,cat_pics/cat3.jpg
-Polly,5,67,cat_pics/cat4.jpg
+Tiny,3,24.0,cat_pics/cat2.jpg
+Rolly,1,90.0,cat_pics/cat3.jpg
+Polly,5,67.0,cat_pics/cat4.jpg
+Kohaze,2,10.5,/home/theta/Documents/programming/school/java-CIS-231/Unit-12/PetShopGUI/cat_pics/cat5.jpg
+Kohaze,2,10.5,/home/theta/Documents/programming/school/java-CIS-231/Unit-12/PetShopGUI/cat_pics/cat5.jpg

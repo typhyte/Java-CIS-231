@@ -1,21 +1,22 @@
+import java.io.File;
 import java.util.ArrayList;
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.text.Text;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
  
 public class PetGUI extends Application {
@@ -27,8 +28,9 @@ public class PetGUI extends Application {
     // elements in GUI //
     Label nameL, ageL, costL;
     TextField nameT, ageT, costT;
-    Button next, prev, exit, addPet, updatePet;
+    Button next, prev, exit, addPet, updatePet, delete;
     ImageView iv;
+    String imageLink;
     // arrangement in GUI //
     BorderPane root;
     GridPane grid;
@@ -42,14 +44,18 @@ public class PetGUI extends Application {
     /*--------------------------------------------*/
 
     // scene 2
-    BorderPane root2;
-    Button cancel;
+    // scene arrangement
+    BorderPane root2; 
+    GridPane dataGrid2, bigGrid2;
 
     // elements
     Label nameL2, ageL2, costL2;
     TextField nameT2, ageT2, costT2;
-    ImageView vi2;
-    GridPane dataGrid2;
+    Button cancel, addPetConfirm, imagePick;
+    ImageView iv2;
+    String imageLink2;
+    FileChooser fileChooser;
+    HBox buttons2;
 
     public static void main(String[] args) {
         launch(args);
@@ -116,6 +122,7 @@ public class PetGUI extends Application {
         exit = new Button("Exit");
         addPet = new Button("Add a Pet");
         updatePet = new Button("Update Pet");
+        delete = new Button("Delete Record");
         // arrangement //
         root = new BorderPane();
         grid = new GridPane();
@@ -132,12 +139,9 @@ public class PetGUI extends Application {
         bigGrid.setVgap(20);
         bigGrid.setHgap(20);
 
-        // rectangle = new Rectangle(200, 400);
-        // rectangle.setFill(Color.BLUE);
-
         bigGrid.addRow(0, grid, iv);
 
-        buttons.getChildren().addAll(prev, exit, next, addPet, updatePet);
+        buttons.getChildren().addAll(prev, exit, next, addPet, updatePet, delete);
         
         root.setCenter(bigGrid);
         root.setBottom(buttons);
@@ -147,9 +151,11 @@ public class PetGUI extends Application {
         nameT.setText(pets.get(index).getName());
         ageT.setText(pets.get(index).getAge()+"");
         costT.setText(pets.get(index).getCost()+"");
+        imageLink = pets.get(index).getLink();
         iv.setImage(new Image("file:" + pets.get(index).getLink()));
     }
 
+    @SuppressWarnings("unused")
     void setButtonActions1() {
         next.setOnAction(e -> {
             ptr++;
@@ -178,16 +184,159 @@ public class PetGUI extends Application {
         addPet.setOnAction(e -> {
             myStage.setScene(scene2);
         });
+
+        iv.setOnMouseClicked(e -> {
+            File userImage = fileChooser.showOpenDialog(myStage);
+
+            try {
+                if (userImage != null) {
+                    String name = userImage.getPath();
+                    imageLink = name;
+                    iv.setImage(new Image("file:" + imageLink));
+                }
+            } catch (Exception exp){}
+        });
+
+        updatePet.setOnAction(e -> {
+            Pet pet = pets.get(ptr);
+
+            pet.setName(nameT.getText().trim());
+            pet.setAge(Integer.parseInt(ageT.getText().trim()));
+            pet.setCost(Double.parseDouble(costT.getText().trim()));
+            pet.setLink(imageLink);
+        });
+
+        delete.setOnAction(e -> {
+            if (pets.size()==1) {
+                Alert a = new Alert(AlertType.INFORMATION);
+                a.setTitle("Warning");
+                a.setContentText("This is the only record. You cannot delete it.");
+                a.show();
+            } else {
+                Alert a = new Alert(AlertType.CONFIRMATION);
+                a.setTitle("Confirm Delete");
+                a.setContentText("This will permanently delete the data! Are you sure you want to delete?");
+                a.showAndWait();
+                if (a.getResult() == ButtonType.OK) {
+                    pets.remove(ptr);
+
+                    if (ptr == 0) {
+                        ptr = pets.size() - 1;
+                    } else {
+                        ptr--;
+                    }
+
+                    setData(ptr);
+                }
+            }
+        });
     }
 
     void initialize2() {
         root2 = new BorderPane();
+
+        // labels //
+        nameL2 = new Label("Pet Name");
+        ageL2 = new Label("Pet Age");
+        costL2 = new Label("Cost of Adoption");
+        // text //
+        nameT2 = new TextField();
+        ageT2 = new TextField();
+        costT2 = new TextField();
+        // buttons //
         cancel = new Button("Cancel");
-        root2.setCenter(cancel);
+        addPetConfirm = new Button("Add pet");
+        imagePick = new Button("Choose Image");
+    
+        dataGrid2 = new GridPane();
+        buttons2 = new HBox();
+
+        // set elements
+        dataGrid2.setPadding((new Insets(20, 20, 20, 20)));
+        dataGrid2.setVgap(20);
+        dataGrid2.setHgap(20);
+
+        dataGrid2.addColumn(0, nameL2, ageL2, costL2);
+        dataGrid2.addColumn(1, nameT2, ageT2, costT2);
+        
+        buttons2.getChildren().addAll(addPetConfirm, cancel, imagePick);
+
+        iv2 = new ImageView();
+        iv2.setFitHeight(200);
+        iv2.setFitWidth(200);
+        iv2.setImage(new Image("file:cat_pics/placeholder.jpg"));
+
+        bigGrid2 = new GridPane();
+        bigGrid2.addRow(0, dataGrid2, iv2);
+
+        root2.setCenter(bigGrid2);
+        root2.setBottom(buttons2);
     }
 
     void setButtonActions2() {
+        fileChooser = new FileChooser();
+        
+        iv2.setOnMouseClicked(e -> {
+            File userImage = fileChooser.showOpenDialog(myStage);
+
+            try {
+                if (userImage != null) {
+                    String name = userImage.getPath();
+                    imageLink2 = name;
+                    iv2.setImage(new Image("file:" + imageLink2));
+                }
+            } catch (Exception exp){}
+            
+        });
+
+        imagePick.setOnAction(e -> {
+            File userImage = fileChooser.showOpenDialog(myStage);
+
+            try {
+                if (userImage != null) {
+                    String name = userImage.getPath();
+                    imageLink2 = name;
+                    iv2.setImage(new Image("file:" + imageLink2));
+                }
+            } catch (Exception exp){}
+            
+        });
+
         cancel.setOnAction(e -> {
+            myStage.setScene(scene1);
+        });
+
+        addPetConfirm.setOnAction(e -> {
+            String name = nameT2.getText().trim();
+            int age = Integer.parseInt(ageT2.getText().trim());
+            double cost = Double.parseDouble(costT2.getText().trim());
+            
+            Pet pet = new Pet(name, age, cost, imageLink2);
+            pets.add(pet);
+
+            ptr = pets.size() - 1;
+            setData(ptr);
+
+            Alert a = new Alert(AlertType.CONFIRMATION);
+            a.setTitle("Save Records");
+            a.setContentText("Would you like to save these changes?");
+            a.showAndWait();
+
+            if (a.getResult() == ButtonType.OK) {
+                ArrayList<String> list = new ArrayList<>();
+                for (int i=0; i < pets.size(); i++) {
+                    list.add(pets.get(i).toString());
+                }
+                MyFile.writeFile(list, "data.csv");
+            }
+
+            // revert everything to default
+            nameT2.setText("Pet");
+            ageT2.setText("0");
+            costT2.setText("0.0");
+            imageLink2 = "cat_pics/placeholder.jpg";
+            iv2.setImage(new Image("file:"+imageLink2));
+            
             myStage.setScene(scene1);
         });
     }

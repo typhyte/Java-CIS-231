@@ -11,6 +11,10 @@ public class Pet {
         this.link = link;
     }
 
+    public void setLink(String link) {
+        this.link = link;
+    }
+
     public String getLink() {
         return link;
     }
@@ -37,5 +41,9 @@ public class Pet {
     
     public void setCost(double cost) {
         this.cost = cost;
+    }
+
+    public String toString() {
+        return name+","+age+","+cost+","+link;
     }
 }
