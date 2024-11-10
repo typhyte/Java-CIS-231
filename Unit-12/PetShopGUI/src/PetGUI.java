@@ -2,6 +2,7 @@ import java.io.File;
 import java.util.ArrayList;
 import javafx.application.Application;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -14,8 +15,6 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
  
@@ -35,8 +34,9 @@ public class PetGUI extends Application {
     BorderPane root;
     GridPane grid;
     GridPane bigGrid;
-    Rectangle rectangle;
-    HBox buttons;
+    HBox image;
+    HBox navButtons;
+    HBox manipButtons;
     // data //
     ArrayList<Pet> pets;
     int ptr;
@@ -56,6 +56,7 @@ public class PetGUI extends Application {
     String imageLink2;
     FileChooser fileChooser;
     HBox buttons2;
+    HBox content;
 
     public static void main(String[] args) {
         launch(args);
@@ -79,7 +80,7 @@ public class PetGUI extends Application {
     void makeScene1() {
         initialize1();
         setButtonActions1();
-        scene1 = new Scene(root, 500, 500);
+        scene1 = new Scene(root, 600, 600);
     }
 
     void makeScene2() {
@@ -104,14 +105,23 @@ public class PetGUI extends Application {
         }
     }
 
+    void saveData(ArrayList<Pet> petList) {
+        ArrayList<String> list = new ArrayList<>();
+
+        for (int i=0; i < pets.size(); i++) {
+            list.add(pets.get(i).toString());
+        }
+        MyFile.writeFile(list, "data.csv");
+    }
+
     void initialize1() {
         // labels //
         nameL = new Label("Pet Name");
         ageL = new Label("Pet Age");
         costL = new Label("Cost of Adoption");
         iv = new ImageView();
-        iv.setFitHeight(150);
-        iv.setFitWidth(150);
+        iv.setFitHeight(250);
+        iv.setFitWidth(250);
         // text //
         nameT = new TextField();
         ageT = new TextField();
@@ -126,10 +136,12 @@ public class PetGUI extends Application {
         // arrangement //
         root = new BorderPane();
         grid = new GridPane();
-        buttons = new HBox();
+        navButtons = new HBox();
+        manipButtons = new HBox();
+        image = new HBox();
         // place the elements //
-        grid.addColumn(0, nameL, ageL, costL);
-        grid.addColumn(1, nameT, ageT, costT);
+        grid.addRow(0, nameL, ageL, costL);
+        grid.addRow(1, nameT, ageT, costT);
         grid.setPadding(new Insets(20,20,20,20));
         grid.setVgap(20);
         grid.setHgap(20);
@@ -139,12 +151,20 @@ public class PetGUI extends Application {
         bigGrid.setVgap(20);
         bigGrid.setHgap(20);
 
-        bigGrid.addRow(0, grid, iv);
+        image.getChildren().addAll(iv);
 
-        buttons.getChildren().addAll(prev, exit, next, addPet, updatePet, delete);
+        bigGrid.addRow(0, grid);
+        bigGrid.addRow(1, image);
+
+        navButtons.getChildren().addAll(prev, exit, next);
+        manipButtons.getChildren().addAll(addPet, updatePet, delete);
         
+        bigGrid.addRow(2, navButtons);
+        navButtons.setAlignment(Pos.CENTER);
+        manipButtons.setAlignment(Pos.CENTER);
+        image.setAlignment(Pos.CENTER);
+        root.setBottom(manipButtons);
         root.setCenter(bigGrid);
-        root.setBottom(buttons);
     }
 
     void setData(int index) {
@@ -198,12 +218,21 @@ public class PetGUI extends Application {
         });
 
         updatePet.setOnAction(e -> {
-            Pet pet = pets.get(ptr);
+            Alert a = new Alert(AlertType.CONFIRMATION);
 
-            pet.setName(nameT.getText().trim());
-            pet.setAge(Integer.parseInt(ageT.getText().trim()));
-            pet.setCost(Double.parseDouble(costT.getText().trim()));
-            pet.setLink(imageLink);
+            a.setTitle("Warning");
+            a.setContentText("Are you sure you want to update this entry?");
+            a.showAndWait();
+            if (a.getResult() == ButtonType.OK) {
+                Pet pet = pets.get(ptr);
+
+                pet.setName(nameT.getText().trim());
+                pet.setAge(Integer.parseInt(ageT.getText().trim()));
+                pet.setCost(Double.parseDouble(costT.getText().trim()));
+                pet.setLink(imageLink);
+
+                saveData(pets);
+            }
         });
 
         delete.setOnAction(e -> {
@@ -225,6 +254,8 @@ public class PetGUI extends Application {
                     } else {
                         ptr--;
                     }
+
+                    saveData(pets);
 
                     setData(ptr);
                 }
@@ -250,14 +281,15 @@ public class PetGUI extends Application {
     
         dataGrid2 = new GridPane();
         buttons2 = new HBox();
+        content = new HBox();
 
         // set elements
         dataGrid2.setPadding((new Insets(20, 20, 20, 20)));
         dataGrid2.setVgap(20);
         dataGrid2.setHgap(20);
 
-        dataGrid2.addColumn(0, nameL2, ageL2, costL2);
-        dataGrid2.addColumn(1, nameT2, ageT2, costT2);
+        dataGrid2.addRow(0, nameL2, ageL2, costL2);
+        dataGrid2.addRow(1, nameT2, ageT2, costT2);
         
         buttons2.getChildren().addAll(addPetConfirm, cancel, imagePick);
 
@@ -266,8 +298,14 @@ public class PetGUI extends Application {
         iv2.setFitWidth(200);
         iv2.setImage(new Image("file:cat_pics/placeholder.jpg"));
 
+        content.getChildren().addAll(iv2);
+
         bigGrid2 = new GridPane();
-        bigGrid2.addRow(0, dataGrid2, iv2);
+        bigGrid2.addRow(0, dataGrid2);
+        bigGrid2.addRow(1, content);
+
+        content.setAlignment(Pos.CENTER);
+        buttons2.setAlignment(Pos.CENTER);
 
         root2.setCenter(bigGrid2);
         root2.setBottom(buttons2);
@@ -323,11 +361,7 @@ public class PetGUI extends Application {
             a.showAndWait();
 
             if (a.getResult() == ButtonType.OK) {
-                ArrayList<String> list = new ArrayList<>();
-                for (int i=0; i < pets.size(); i++) {
-                    list.add(pets.get(i).toString());
-                }
-                MyFile.writeFile(list, "data.csv");
+                saveData(pets);
             }
 
             // revert everything to default
