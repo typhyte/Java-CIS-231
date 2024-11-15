@@ -6,7 +6,7 @@ public class App {
         Scanner input = new Scanner(System.in);
         int currentTest = 0;
 
-        System.out.print("Hey! Which util would you like to test?\n[1] Test the MyArrayList class\n[2] Test the MyFile class\n");
+        System.out.print("Hey! Which util would you like to test?\n[1] Test the MyArrayList class\n[2] Test the MyFile class\n[3] Test the MyLinkedList class\n");
         currentTest = input.nextInt();
         
         switch (currentTest) {
@@ -16,6 +16,9 @@ public class App {
 
             case 2:
                 myFileTest();
+                break;
+            case 3:
+                myLinkedListTest();
                 break;
         }
 
@@ -70,5 +73,18 @@ public class App {
         for (int i = 0; i < list.size(); i++) {
             System.out.println(list.get(i));
         }
+    }
+
+    public static void myLinkedListTest() {
+        MyLinkedList list = new MyLinkedList<>();
+        list.add("AAAA");
+        list.add("BBBB");
+        list.add("CCCC");
+
+        list.add(2, "DDDD");
+
+        for (int i = 0; i < list.size(); i++) {
+            System.out.println(list.get(i));
+        }    
     }
 }
