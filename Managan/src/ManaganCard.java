@@ -1,13 +1,16 @@
 public class ManaganCard {
     String name;
+    int id;
     double price;
     int rarity;
+    boolean isOwned;
     String cardArt;
 
-    ManaganCard(String name, double price, int rarity, String cardArt) {
+    ManaganCard(String name, int id, double price, boolean isOwned, String cardArt) {
         this.name = name;
+        this.id = id;
         this.price = price;
-        this.rarity = rarity;
+        this.isOwned = isOwned;
         this.cardArt = cardArt;
     }
 
@@ -44,11 +47,11 @@ public class ManaganCard {
 
     public String returnCardRarity(int rarity) {
         switch (rarity) {
-            case 1:
+            case 0:
                 return "Common";
-            case 2:
+            case 1:
                 return "Uncommon";
-            case 3:
+            case 2:
                 return "Rare";
             default:
                 return "Rarity N/A.";

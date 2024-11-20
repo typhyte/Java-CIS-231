@@ -1,18 +1,19 @@
-## Getting Started
+## Managan
 
-Welcome to the VS Code Java world. Here is a guideline to help you get started to write Java code in Visual Studio Code.
+A small trading card simulator that uses the fictional card game "Managan" (Mah-nah-gahn) as its cards
 
-## Folder Structure
+# Collect your cards!
 
-The workspace contains two folders by default, where:
+There are a total of 15 cards to collect, each in different sets of packs! Can you collect them all?
 
-- `src`: the folder to maintain sources
-- `lib`: the folder to maintain dependencies
+# Admire your cards!
 
-Meanwhile, the compiled output files will be generated in the `bin` folder by default.
+After collecting cards, you can examine them closer in order to really appreciate the illustrations of each card.
 
-> If you want to customize the folder structure, open `.vscode/settings.json` and update the related settings there.
+# Sell your cards!
 
-## Dependency Management
+Your cards have varying values depending on rarity and "market value", determine when to sell your cards to make MAXIMUM profit!
 
-The `JAVA PROJECTS` view allows you to manage your dependencies. More details can be found [here](https://github.com/microsoft/vscode-java-dependency#manage-dependencies).
+# BUY MORE CARDS!!!
+
+The fun never ends in this game! Keep selling cards in order to buy more packs and potentially get a huge hit!
