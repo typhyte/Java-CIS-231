@@ -6,12 +6,28 @@ public class ManaganCard {
     boolean isOwned;
     String cardArt;
 
-    ManaganCard(String name, int id, double price, boolean isOwned, String cardArt) {
+    ManaganCard(String name, int id, double price, boolean isOwned, String cardArt, int rarity) {
         this.name = name;
         this.id = id;
         this.price = price;
         this.isOwned = isOwned;
         this.cardArt = cardArt;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public boolean isOwned() {
+        return isOwned;
+    }
+
+    public void setOwned(boolean isOwned) {
+        this.isOwned = isOwned;
     }
 
     public String getName() {
@@ -42,19 +58,24 @@ public class ManaganCard {
         this.cardArt = cardArt;
     }
 
+    @Override
+    public String toString() {
+        return "Card Name: " + this.name + ", ID: " + this.id + ", Name: " + this.name + ", Price: " + this.price + ", Owned? " + this.isOwned + ", Card Art Location: " + this.cardArt + ", Rarity: " + returnCardRarity(rarity);
+    }
+
     // rarity will be taken as an int and translated into strings
     // i.e. 1 is a common, 2 is a holo, 3 is an sir, etc etc
 
     public String returnCardRarity(int rarity) {
         switch (rarity) {
-            case 0:
-                return "Common";
             case 1:
-                return "Uncommon";
+                return "Common";
             case 2:
+                return "Uncommon";
+            case 3:
                 return "Rare";
             default:
-                return "Rarity N/A.";
+                return "Not Collected";
         }
     }
 }

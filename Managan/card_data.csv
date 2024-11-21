@@ -1,1 +1,15 @@
-
+Card1,0,0,true,cards/pack1_card1.png,0
+Card2,1,0,true,cards/pack1_card2.png,0
+Card3,2,0,true,cards/pack1_card3.png,0
+Card4,3,0,false,cards/pack1_card4.png,0
+Card5,4,0,false,cards/pack1_card5.png,0
+Card6,5,0,false,cards/pack2_card1.png,0
+Card7,6,0,false,cards/pack2_card2.png,0
+Card8,7,0,false,cards/pack2_card3.png,0
+Card9,8,0,false,cards/pack2_card4.png,0
+Card10,9,0,false,cards/pack2_card5.png,0
+Card11,10,0,false,cards/pack3_card1.png,0
+Card12,11,0,false,cards/pack3_card2.png,0
+Card13,12,0,false,cards/pack3_card3.png,0
+Card14,13,0,false,cards/pack3_card4.png,0
+Card15,14,0,false,cards/pack3_card5.png,0
