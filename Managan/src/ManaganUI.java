@@ -1,5 +1,3 @@
-
-
 import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
 
@@ -9,6 +7,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,6 +17,8 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
@@ -47,7 +48,6 @@ public class ManaganUI extends Application {
                                                Boolean.parseBoolean(fields[3].trim()), 
                                                fields[4].trim(),
                                                Integer.parseInt(fields[5].trim()));
-            System.out.println(card.toString());
             cardList.add(card);
         }
     }
@@ -65,7 +65,6 @@ public class ManaganUI extends Application {
         // preps each scene so it can load the scenes as they're called
         prepTitleScene();
         prepCollectionScene();
-        // TODO: make createShopScene() and setCardInspectionSceneButtonActions()
         // TODO: create prepShopScene(), createShopScene(), and setShopSceneButtonActions()
 
         primaryStage.setScene(titleScene);
@@ -73,7 +72,8 @@ public class ManaganUI extends Application {
     }
     
     // collection of roots for each scene
-    BorderPane titleRoot, collectionRoot, cardInspectionRoot, shopRoot;
+    BorderPane titleRoot, collectionRoot, shopRoot;
+    StackPane cardInspectionRoot;
 
     // start of title scene creation
     // scene elements
@@ -109,7 +109,6 @@ public class ManaganUI extends Application {
     // start of collection scene creation
     // scene organization
     GridPane cardCollection;
-    Label currentCollection;
     HBox cardCollectionRow[];
     
 
@@ -130,7 +129,6 @@ public class ManaganUI extends Application {
         collectionRoot = new BorderPane();
         cardCollection = new GridPane();
         // elements
-        currentCollection = new Label("You currently have 0 cards!");
         cardImages = new ImageView[3][5];
         cardCollectionRow = new HBox[3];
 
@@ -155,7 +153,6 @@ public class ManaganUI extends Application {
             cardCollectionRow[i].getChildren().addAll(cardImages[i][0], cardImages[i][1], cardImages[i][2], cardImages[i][3], cardImages[i][4]);
         }
 
-        cardCollection.addRow(0, currentCollection);
         cardCollection.addRow(1, cardCollectionRow[0]);
         cardCollection.addRow(2, cardCollectionRow[1]);
         cardCollection.addRow(3, cardCollectionRow[2]);
@@ -173,10 +170,11 @@ public class ManaganUI extends Application {
             for (int j = 0; j < cardImages[i].length; j++) {
                 final int cardArtColumn = j;
                 cardImages[i][j].setOnMouseClicked(e -> {
-                    System.out.println("I've been clicked!!! My ID is... " + cardList.get(cardArtColumn + (cardArtRow*5)).getId());
-                    prepCardInspectionScene(cardArtColumn+(cardArtRow*5));
-                    currentStage.setScene(cardInspectionScene);
-
+                    if (cardList.get(cardArtColumn + (cardArtRow * 5)).isOwned) {
+                        System.out.println("I've been clicked!!! My ID is... " + cardList.get(cardArtColumn + (cardArtRow*5)).getId());
+                        prepCardInspectionScene(cardArtColumn+(cardArtRow*5));
+                        currentStage.setScene(cardInspectionScene);
+                    }
                 });
             }
         }
@@ -185,11 +183,13 @@ public class ManaganUI extends Application {
     // start of card inspection scene
     // organization
     GridPane inspectorView;
+    BorderPane buttonArea;
     VBox cardProperties;
 
     // elements
     ImageView cardView;
     Label cardName, cardRarity, cardPrice;
+    Button returnButton;
 
     void prepCardInspectionScene(int currentClickedCard) {
         createCardInspectionScene(currentClickedCard);
@@ -198,31 +198,44 @@ public class ManaganUI extends Application {
     }
 
     void createCardInspectionScene(int currentClickedCard) {
-        cardInspectionRoot = new BorderPane();
+        cardInspectionRoot = new StackPane();
         inspectorView = new GridPane();
-
-        cardProperties = new VBox(8);
+        buttonArea = new BorderPane();
+        
 
         cardView = new ImageView();
         cardView.setFitHeight(756);
         cardView.setFitWidth(540);
 
+        cardView.setImage(new Image("file:"+cardList.get(currentClickedCard).getCardArt()));
+
+        cardProperties = new VBox(8);
+
         cardName = new Label("Name: " + cardList.get(currentClickedCard).getName());
         cardRarity = new Label("Rarity: " + cardList.get(currentClickedCard).getRarity());
         cardPrice = new Label("Price" + cardList.get(currentClickedCard).getPrice());
 
-        cardView.setImage(new Image("file:"+cardList.get(currentClickedCard).getCardArt()));
-
         cardProperties.getChildren().addAll(cardName, cardRarity, cardPrice);
+        
+        returnButton = new Button("Return to Collection");
+
+        buttonArea.setRight(returnButton);
+        BorderPane.setAlignment(buttonArea, Pos.CENTER);
+
         inspectorView.addRow(0, cardView, cardProperties);
         inspectorView.setPadding(new Insets(20, 20, 20, 20));
         inspectorView.setVgap(20);
         inspectorView.setHgap(20);
+        inspectorView.setAlignment(Pos.CENTER);
+        cardProperties.setAlignment(Pos.CENTER_LEFT);
 
         cardInspectionRoot.getChildren().add(inspectorView);
+        cardInspectionRoot.getChildren().add(buttonArea);
     }
 
     void setCardInspectionSceneButtonActions() {
-
+        returnButton.setOnAction(e -> {
+            currentStage.setScene(collectionScene);
+        });
     }
 }
