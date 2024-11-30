@@ -1,13 +1,8 @@
-import java.lang.ProcessBuilder.Redirect;
 import java.util.ArrayList;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -15,19 +10,16 @@ import javafx.scene.effect.ColorAdjust;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.RowConstraints;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
  
 public class ManaganUI extends Application {
     // program-wide vars
-    int money;
+    int money = 15;
     ArrayList<ManaganCard> cardList;
     
     // scenes
@@ -35,6 +27,16 @@ public class ManaganUI extends Application {
     Stage currentStage;
 
     // utility functions
+    void saveData() {
+        ArrayList<String> list = new ArrayList<>();
+
+        for (int i = 0; i < cardList.size(); i++) {
+            list.add(cardList.get(i).toString());
+        }
+
+        MyFile.writeFile(list, "card_data.csv");
+    }
+    
     void loadData(String fileName) { // loads data into a arraylist for easy storage
         cardList = new ArrayList<>();
         ArrayList<String> list = MyFile.readFile(fileName);
@@ -44,14 +46,29 @@ public class ManaganUI extends Application {
             String[] fields = curItem.split(",");
             ManaganCard card = new ManaganCard(fields[0].trim(), 
                                                Integer.parseInt(fields[1].trim()), 
-                                               Double.parseDouble(fields[2].trim()), 
+                                               Integer.parseInt(fields[2].trim()), 
                                                Boolean.parseBoolean(fields[3].trim()), 
                                                fields[4].trim(),
                                                Integer.parseInt(fields[5].trim()));
             cardList.add(card);
         }
     }
-    
+
+    void updateCardArt() {
+        ColorAdjust monochrome = new ColorAdjust();
+        monochrome.setSaturation(-0.8);
+
+        for(int i = 0; i < 3; i++) {
+            for (int j = 0; j < 5; j++) {
+                if (cardList.get(j+(5*i)).isOwned == false) {
+                    cardImages[i][j].setEffect(monochrome);
+                } else {
+                    cardImages[i][j].setEffect(null);
+                }
+            }
+        }
+    }
+
     public static void main(String[] args) {
         launch(args);
     }
@@ -65,7 +82,7 @@ public class ManaganUI extends Application {
         // preps each scene so it can load the scenes as they're called
         prepTitleScene();
         prepCollectionScene();
-        // TODO: create prepShopScene(), createShopScene(), and setShopSceneButtonActions()
+        prepShopScene();
 
         primaryStage.setScene(titleScene);
         primaryStage.show();
@@ -78,7 +95,7 @@ public class ManaganUI extends Application {
     // start of title scene creation
     // scene elements
     Button startButton;
-
+    
     // organizaiton elements
     GridPane titleOrganizer;
     
@@ -114,7 +131,8 @@ public class ManaganUI extends Application {
 
     // scene elements
     ImageView[][] cardImages;
-    ColorAdjust monochrome;
+    Button toShopButton, debugOwnDeOwnButton;
+    Label moneyOwned;
 
     // gets everything ready to switch
     void prepCollectionScene() {
@@ -132,8 +150,7 @@ public class ManaganUI extends Application {
         cardImages = new ImageView[3][5];
         cardCollectionRow = new HBox[3];
 
-        monochrome = new ColorAdjust();
-        monochrome.setSaturation(-0.8);
+        moneyOwned = new Label("$" + money);
 
         for (int i = 0; i < 3; i++) {
             cardCollectionRow[i] = new HBox(20);
@@ -144,14 +161,12 @@ public class ManaganUI extends Application {
                 /* implementation's weird, but adding j by the product of i + 5 should return
                  * the correct one dimensional index number.*/
                 cardImages[i][j].setImage(new Image("file:" + cardList.get(j+(5*i)).getCardArt()));
-
-                // if card is not collected, make it a different shade.
-                if (cardList.get(j+(5*i)).isOwned() == false) {
-                    cardImages[i][j].setEffect(monochrome);
-                }
             }
             cardCollectionRow[i].getChildren().addAll(cardImages[i][0], cardImages[i][1], cardImages[i][2], cardImages[i][3], cardImages[i][4]);
         }
+
+        // if card is not collected, make it a different shade.
+        updateCardArt();
 
         cardCollection.addRow(1, cardCollectionRow[0]);
         cardCollection.addRow(2, cardCollectionRow[1]);
@@ -161,7 +176,13 @@ public class ManaganUI extends Application {
         cardCollection.setVgap(20);
         cardCollection.setHgap(20);
 
+        toShopButton = new Button("Go to Shop");
+        debugOwnDeOwnButton = new Button("Get rid of all cards");
+
         collectionRoot.setCenter(cardCollection);
+        collectionRoot.setRight(toShopButton);
+        collectionRoot.setLeft(debugOwnDeOwnButton);
+        collectionRoot.setTop(moneyOwned);
     }
 
     void setCollectionSceneButtonActions() {
@@ -178,6 +199,18 @@ public class ManaganUI extends Application {
                 });
             }
         }
+
+        toShopButton.setOnAction(e -> {
+            currentStage.setScene(shopScene);
+        });
+
+        debugOwnDeOwnButton.setOnAction(e -> {
+            for (int i = 0; i < cardList.size(); i++) {
+                cardList.get(i).isOwned = false;
+            }
+            
+            updateCardArt();
+        });
     }
 
     // start of card inspection scene
@@ -189,11 +222,11 @@ public class ManaganUI extends Application {
     // elements
     ImageView cardView;
     Label cardName, cardRarity, cardPrice;
-    Button returnButton;
+    Button returnButton, sellCardButton;
 
     void prepCardInspectionScene(int currentClickedCard) {
         createCardInspectionScene(currentClickedCard);
-        setCardInspectionSceneButtonActions();
+        setCardInspectionSceneButtonActions(currentClickedCard);
         cardInspectionScene = new Scene(cardInspectionRoot, 1600, 900);
     }
 
@@ -218,8 +251,10 @@ public class ManaganUI extends Application {
         cardProperties.getChildren().addAll(cardName, cardRarity, cardPrice);
         
         returnButton = new Button("Return to Collection");
+        sellCardButton = new Button("Sell this card");
 
         buttonArea.setRight(returnButton);
+        buttonArea.setLeft(sellCardButton);
         BorderPane.setAlignment(buttonArea, Pos.CENTER);
 
         inspectorView.addRow(0, cardView, cardProperties);
@@ -233,9 +268,160 @@ public class ManaganUI extends Application {
         cardInspectionRoot.getChildren().add(buttonArea);
     }
 
-    void setCardInspectionSceneButtonActions() {
+    void setCardInspectionSceneButtonActions(int currentClickedCard) {
         returnButton.setOnAction(e -> {
             currentStage.setScene(collectionScene);
         });
+
+        sellCardButton.setOnAction(e -> {
+            money += cardList.get(currentClickedCard).getPrice();
+            cardList.get(currentClickedCard).isOwned = false;
+            currentStage.setScene(collectionScene);
+
+            updateCardArt();
+            saveData();
+            moneyOwned.setText("$"+money);
+        });
+    }
+
+    // start of shop scene
+    void prepShopScene() {
+        createShopScene();
+        setShopSceneButtonActions();
+        shopScene = new Scene(shopRoot, 1600, 900);
+    }
+
+    GridPane shopMenu;
+    Button buyApprenticePackButton, buyMagicalAnimalPackButton, buyFiveWiseOnesPackButton, shopExitButton;
+    Label apprenticePackLabel, magicalAnimalLabel, fiveWiseOnesPack;
+    // probs should be imageviews for card packs n stuff
+
+    void createShopScene() {
+        /*
+         * this scene should do the following
+         * buy a pack [done!]
+         * packs contain 2 cards out of the row their associated [done!]
+         *      (i.e apprentice pack will be row 0 from the collection scene, magical animal pack will be row 1, and five wise ones will be row 2)
+         * after a pack is bought, update the two cards given in the arraylist/csv as owned [done]
+         * randomly assign each card with a rarity 0-2 [done!]
+         * randomly assign the card a price according to their rarity [done!]
+         *      (i.e. rarity 0 gets a price between 1-3 while rarity 2 gets a price between 10-15)
+         *      (prices will increase depending on the pack)
+         * must use up currency [done!]
+         */
+        // element
+        shopRoot = new BorderPane();
+        shopMenu = new GridPane();
+
+        buyApprenticePackButton = new Button("Buy Apprentice Pack!\n$5");
+        buyMagicalAnimalPackButton = new Button("Buy Magical Animal Pack\n$10");
+        buyFiveWiseOnesPackButton = new Button("Buy Five Wise Ones\n$15");
+
+        shopExitButton = new Button("Exit Shop");
+
+        shopMenu.addRow(0, buyApprenticePackButton, buyMagicalAnimalPackButton, buyFiveWiseOnesPackButton);
+        shopMenu.addRow(1, shopExitButton);
+
+        shopMenu.setPadding(new Insets(50, 50, 50, 50));
+        shopMenu.getColumnConstraints().add(new ColumnConstraints(200));
+        shopMenu.getColumnConstraints().add(new ColumnConstraints(200));
+        shopMenu.getColumnConstraints().add(new ColumnConstraints(200));
+
+        shopMenu.setVgap(20);
+        shopMenu.setHgap(20);
+
+        //shopMenu.setAlignment(Pos.CENTER);
+
+        shopRoot.getChildren().add(shopMenu);
+        System.out.println("I AM CURRENTLY IN THE SHOP SCENE ISTG");
+
+    }
+
+    private int randomizeCard(int cardPack) {
+        return (int) (Math.random() * 5) + (5*cardPack);
+    }
+
+    private int randomizeRarity() {
+        int probability = (int) (Math.random() * 100);
+
+        // gives each rarity a different chance of happening instead of just 1 in 3
+        if (probability <= 50) {
+            return 0;
+        } else if (probability < 90) {
+            return 1;
+        } else {
+            return 2;
+        }
+    }
+
+    private void getYourCards(int pack) {
+        int curCardCollected = 0;
+        int curRarity = 0;
+
+        for (int i = 0; i < 2; i++) {
+            curCardCollected = randomizeCard(pack);
+            curRarity = randomizeRarity();
+            System.out.println("You got " + cardList.get(curCardCollected).getName() + "!");
+            cardList.get(curCardCollected).isOwned = true;
+            cardList.get(curCardCollected).setRarity(curRarity);
+
+            // i have no idea what half of these randoms produce but im just gonna pretend it makes sense
+            //  just allows me to calculate the money in order to make it easier to change down the line
+            switch (pack) {
+                case 0:
+                    cardList.get(curCardCollected).setPrice((int) ((Math.random() * 5) + (curRarity * 5)) + 1);
+                    break;
+                case 1:
+                    cardList.get(curCardCollected).setPrice((int) (Math.random() * 10) + (curRarity * 10) + 5);
+                    break;
+                case 2:
+                    cardList.get(curCardCollected).setPrice((int) (Math.random() * 20) + (curRarity * 20) + 2);
+                    break;
+                default:
+                    System.out.println("You got a counterfeit! Oh no!");
+            
+                    cardList.get(curCardCollected).setPrice(0);          
+            }
+
+            saveData();
+        }
+    }
+    // allows us to keep track of the card collected in a pack throughout an entire method
+
+    void setShopSceneButtonActions() {
+        buyApprenticePackButton.setOnAction(e -> {
+            if (money >= 5) {
+                getYourCards(0);
+                money -= 5;
+            } else {
+                System.out.println("You don't have the money!");
+            }
+        });
+
+        buyMagicalAnimalPackButton.setOnAction(e -> {
+            if (money >= 10) {
+                getYourCards(1);
+                money -= 10;
+            } else {
+                System.out.println("You don't have the money!");
+            }
+        });
+
+        buyFiveWiseOnesPackButton.setOnAction(e -> {
+            if (money >= 15) {
+                getYourCards(2);
+                money -= 15;
+            } else {
+                System.out.println("You don't have the money!");
+            }
+        });
+
+        shopExitButton.setOnAction(e -> {
+            currentStage.setScene(collectionScene);
+            updateCardArt();
+            moneyOwned.setText("$" + money);
+        });
+
+
     }
 }

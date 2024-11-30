@@ -1,12 +1,12 @@
 public class ManaganCard {
     String name;
     int id;
-    double price;
+    int price;
     int rarity;
     boolean isOwned;
     String cardArt;
 
-    ManaganCard(String name, int id, double price, boolean isOwned, String cardArt, int rarity) {
+    ManaganCard(String name, int id, int price, boolean isOwned, String cardArt, int rarity) {
         this.name = name;
         this.id = id;
         this.price = price;
@@ -38,7 +38,7 @@ public class ManaganCard {
         return price;
     }
 
-    public void setPrice(double price) {
+    public void setPrice(int price) {
         this.price = price;
     }
 
@@ -60,7 +60,7 @@ public class ManaganCard {
 
     @Override
     public String toString() {
-        return "Card Name: " + this.name + ", ID: " + this.id + ", Name: " + this.name + ", Price: " + this.price + ", Owned? " + this.isOwned + ", Card Art Location: " + this.cardArt + ", Rarity: " + returnCardRarity(rarity);
+        return this.name + "," + this.id + "," + this.price + "," + this.isOwned + "," + this.cardArt + "," + this.rarity;
     }
 
     // rarity will be taken as an int and translated into strings

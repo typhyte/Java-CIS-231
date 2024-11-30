@@ -1,15 +1,15 @@
-Card1,0,0,true,cards/pack1_card1.png,0
-Card2,1,0,true,cards/pack1_card2.png,0
-Card3,2,0,true,cards/pack1_card3.png,0
-Card4,3,0,false,cards/pack1_card4.png,0
-Card5,4,0,false,cards/pack1_card5.png,0
-Card6,5,0,false,cards/pack2_card1.png,0
-Card7,6,0,false,cards/pack2_card2.png,0
-Card8,7,0,false,cards/pack2_card3.png,0
-Card9,8,0,false,cards/pack2_card4.png,0
-Card10,9,0,false,cards/pack2_card5.png,0
-Card11,10,0,false,cards/pack3_card1.png,0
-Card12,11,0,false,cards/pack3_card2.png,0
-Card13,12,0,false,cards/pack3_card3.png,0
-Card14,13,0,false,cards/pack3_card4.png,0
-Card15,14,0,false,cards/pack3_card5.png,0
+Base Wizard,0,13,false,cards/pack1_card1.png,0
+Accidental Explosion,1,2,true,cards/pack1_card2.png,0
+Study Time,2,3,true,cards/pack1_card3.png,0
+Gloat,3,2,true,cards/pack1_card4.png,0
+Mastery,4,2,false,cards/pack1_card5.png,0
+Magicat,5,14,false,cards/pack2_card1.png,0
+Snakis Arcanis,6,6,true,cards/pack2_card2.png,0
+Fawks,7,19,false,cards/pack2_card3.png,0
+Racci the Goofus,8,6,true,cards/pack2_card4.png,0
+Sable Shopkeep,9,25,true,cards/pack2_card5.png,2
+Sammie the Conjurer,10,2,false,cards/pack3_card1.png,0
+Jimmythan III,11,0,false,cards/pack3_card2.png,0
+KK the Handyman,12,4,false,cards/pack3_card3.png,0
+Jellington the Great,13,0,false,cards/pack3_card4.png,0
+Apricot the Wildcard,14,30,false,cards/pack3_card5.png,0
