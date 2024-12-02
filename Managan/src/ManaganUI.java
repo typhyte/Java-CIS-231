@@ -1,8 +1,11 @@
 import java.util.ArrayList;
 
+import javafx.animation.FadeTransition;
 import javafx.application.Application;
+import javafx.geometry.HPos;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.geometry.VPos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -13,13 +16,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
+import javafx.scene.text.Font;
 import javafx.stage.Stage;
+import javafx.util.Duration;
  
 public class ManaganUI extends Application {
     // program-wide vars
-    int money = 15;
+    ArrayList<String> moneyCSV = MyFile.readFile("money.csv");
+
+    int money = Integer.parseInt(moneyCSV.get(0));
     ArrayList<ManaganCard> cardList;
     
     // scenes
@@ -35,6 +43,7 @@ public class ManaganUI extends Application {
         }
 
         MyFile.writeFile(list, "card_data.csv");
+        MyFile.writeFile(moneyCSV, "money.csv");
     }
     
     void loadData(String fileName) { // loads data into a arraylist for easy storage
@@ -95,26 +104,38 @@ public class ManaganUI extends Application {
     // start of title scene creation
     // scene elements
     Button startButton;
+    ImageView gameLogo;
     
     // organizaiton elements
     GridPane titleOrganizer;
     
+
     void prepTitleScene() {
         createTitleScene();
         setTitleSceneButtonActions();
-        titleScene = new Scene(titleRoot, 750, 750);
+        titleScene = new Scene(titleRoot, 1600, 900);
     }
 
     void createTitleScene() {
         // initialize elements
-        //TODO: draw title screen graphic
         titleOrganizer = new GridPane();
+        gameLogo = new ImageView();
+        gameLogo.setFitHeight(540);
+        gameLogo.setFitWidth(960);
+        gameLogo.setImage(new Image("file:logo.png"));
         startButton = new Button("Enter Managan");
-        
+
         // create root (for placing stuff)
         titleRoot = new BorderPane();
 
-        titleRoot.setCenter(startButton);
+        titleOrganizer.addRow(0, gameLogo);
+        titleOrganizer.addRow(1, startButton);
+
+        GridPane.setHalignment(startButton, HPos.CENTER);
+        titleOrganizer.setAlignment(Pos.CENTER);
+        titleOrganizer.setPadding(new Insets(20, 20, 20, 20));
+        titleOrganizer.setVgap(20);
+        titleRoot.setCenter(titleOrganizer);
     }
 
     void setTitleSceneButtonActions() {
@@ -181,8 +202,7 @@ public class ManaganUI extends Application {
 
         collectionRoot.setCenter(cardCollection);
         collectionRoot.setRight(toShopButton);
-        collectionRoot.setLeft(debugOwnDeOwnButton);
-        collectionRoot.setTop(moneyOwned);
+        collectionRoot.setLeft(moneyOwned);
     }
 
     void setCollectionSceneButtonActions() {
@@ -192,7 +212,6 @@ public class ManaganUI extends Application {
                 final int cardArtColumn = j;
                 cardImages[i][j].setOnMouseClicked(e -> {
                     if (cardList.get(cardArtColumn + (cardArtRow * 5)).isOwned) {
-                        System.out.println("I've been clicked!!! My ID is... " + cardList.get(cardArtColumn + (cardArtRow*5)).getId());
                         prepCardInspectionScene(cardArtColumn+(cardArtRow*5));
                         currentStage.setScene(cardInspectionScene);
                     }
@@ -202,14 +221,6 @@ public class ManaganUI extends Application {
 
         toShopButton.setOnAction(e -> {
             currentStage.setScene(shopScene);
-        });
-
-        debugOwnDeOwnButton.setOnAction(e -> {
-            for (int i = 0; i < cardList.size(); i++) {
-                cardList.get(i).isOwned = false;
-            }
-            
-            updateCardArt();
         });
     }
 
@@ -278,6 +289,7 @@ public class ManaganUI extends Application {
             cardList.get(currentClickedCard).isOwned = false;
             currentStage.setScene(collectionScene);
 
+            moneyCSV.set(0, Integer.toString(money));
             updateCardArt();
             saveData();
             moneyOwned.setText("$"+money);
@@ -293,7 +305,10 @@ public class ManaganUI extends Application {
 
     GridPane shopMenu;
     Button buyApprenticePackButton, buyMagicalAnimalPackButton, buyFiveWiseOnesPackButton, shopExitButton;
-    Label apprenticePackLabel, magicalAnimalLabel, fiveWiseOnesPack;
+    Label apprenticePackLabel, magicalAnimalLabel, fiveWiseOnesPack, toastCardGot;
+    HBox shopExitContainer, toastContainer;
+    FadeTransition toastFade;
+    int[] cardsCollectedFromPack;
     // probs should be imageviews for card packs n stuff
 
     void createShopScene() {
@@ -312,6 +327,9 @@ public class ManaganUI extends Application {
         // element
         shopRoot = new BorderPane();
         shopMenu = new GridPane();
+        shopExitContainer = new HBox();
+        toastContainer = new HBox();
+        
 
         buyApprenticePackButton = new Button("Buy Apprentice Pack!\n$5");
         buyMagicalAnimalPackButton = new Button("Buy Magical Animal Pack\n$10");
@@ -319,22 +337,33 @@ public class ManaganUI extends Application {
 
         shopExitButton = new Button("Exit Shop");
 
+        toastCardGot = new Label();
+
+        toastFade = new FadeTransition(Duration.millis(5000));
+        toastFade.setNode(toastCardGot);
+        toastFade.setFromValue(1.0);
+        toastFade.setToValue(0);
+        toastFade.setCycleCount(1);
+        toastFade.setAutoReverse(false);
+
         shopMenu.addRow(0, buyApprenticePackButton, buyMagicalAnimalPackButton, buyFiveWiseOnesPackButton);
-        shopMenu.addRow(1, shopExitButton);
+
+        shopExitContainer.getChildren().add(shopExitButton);
+        shopExitContainer.setStyle("-fx-alignment: center;");
+
+        toastContainer.getChildren().add(toastCardGot);
+        toastContainer.setStyle("-fx-alignment: center;");
+        toastCardGot.setFont(new Font(30));
 
         shopMenu.setPadding(new Insets(50, 50, 50, 50));
-        shopMenu.getColumnConstraints().add(new ColumnConstraints(200));
-        shopMenu.getColumnConstraints().add(new ColumnConstraints(200));
-        shopMenu.getColumnConstraints().add(new ColumnConstraints(200));
 
         shopMenu.setVgap(20);
         shopMenu.setHgap(20);
 
-        //shopMenu.setAlignment(Pos.CENTER);
-
-        shopRoot.getChildren().add(shopMenu);
-        System.out.println("I AM CURRENTLY IN THE SHOP SCENE ISTG");
-
+        shopMenu.setAlignment(Pos.CENTER);
+        shopRoot.setTop(toastContainer);
+        shopRoot.setCenter(shopMenu);
+        shopRoot.setBottom(shopExitContainer);
     }
 
     private int randomizeCard(int cardPack) {
@@ -355,15 +384,18 @@ public class ManaganUI extends Application {
     }
 
     private void getYourCards(int pack) {
+        // allows us to keep track of the card collected in a pack throughout an entire method
         int curCardCollected = 0;
         int curRarity = 0;
+        cardsCollectedFromPack = new int[2];
 
         for (int i = 0; i < 2; i++) {
             curCardCollected = randomizeCard(pack);
             curRarity = randomizeRarity();
-            System.out.println("You got " + cardList.get(curCardCollected).getName() + "!");
             cardList.get(curCardCollected).isOwned = true;
             cardList.get(curCardCollected).setRarity(curRarity);
+
+            cardsCollectedFromPack[i] = curCardCollected;
 
             // i have no idea what half of these randoms produce but im just gonna pretend it makes sense
             //  just allows me to calculate the money in order to make it easier to change down the line
@@ -380,13 +412,15 @@ public class ManaganUI extends Application {
                 default:
                     System.out.println("You got a counterfeit! Oh no!");
             
-                    cardList.get(curCardCollected).setPrice(0);          
+                    cardList.get(curCardCollected).setPrice(0);                       
             }
+            toastCardGot.setText("You got " + cardList.get(cardsCollectedFromPack[0]).getName() + " and " + cardList.get(cardsCollectedFromPack[1]).getName());
+            toastFade.playFromStart();
+
 
             saveData();
         }
     }
-    // allows us to keep track of the card collected in a pack throughout an entire method
 
     void setShopSceneButtonActions() {
         buyApprenticePackButton.setOnAction(e -> {
